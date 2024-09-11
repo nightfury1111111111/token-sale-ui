@@ -1,0 +1,258 @@
+{
+    "version": "0.1.0",
+    "name": "token_sale",
+    "instructions": [
+        {
+            "name": "initAdmin",
+            "accounts": [
+                {
+                    "name": "admin",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "agent",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenRecipient",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "targetToken",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "paymentToken1",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "paymentToken2",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "vault",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "adminState",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "systemProgram",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "rent",
+                    "isMut": false,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "tokenPrice",
+                    "type": "u64"
+                },
+                {
+                    "name": "targetTokenDecimal",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "updateAdmin",
+            "accounts": [
+                {
+                    "name": "admin",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "newAdmin",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "newAgent",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "newTokenRecipient",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "adminState",
+                    "isMut": true,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "tokenPrice",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "purchaseByUser",
+            "accounts": [
+                {
+                    "name": "user",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "adminState",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "vault",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "targetToken",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "userTargetTokenAccount",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "paymentToken",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "userPaymentTokenAccount",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenRecipientPaymentTokenAccount",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "amount",
+                    "type": "u64"
+                }
+            ]
+        },
+        {
+            "name": "purchaseByAgent",
+            "accounts": [
+                {
+                    "name": "agent",
+                    "isMut": true,
+                    "isSigner": true
+                },
+                {
+                    "name": "adminState",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "vault",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "targetToken",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "userTargetTokenAccount",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "tokenProgram",
+                    "isMut": false,
+                    "isSigner": false
+                }
+            ],
+            "args": [
+                {
+                    "name": "amount",
+                    "type": "u64"
+                }
+            ]
+        }
+    ],
+    "accounts": [
+        {
+            "name": "AdminState",
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "bump",
+                        "type": "u8"
+                    },
+                    {
+                        "name": "admin",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "agent",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "tokenRecipient",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "tokenPrice",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "paymentToken1",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "paymentToken2",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "targetToken",
+                        "type": "publicKey"
+                    },
+                    {
+                        "name": "targetTokenDecimal",
+                        "type": "u64"
+                    }
+                ]
+            }
+        }
+    ],
+    "metadata": {
+        "address": "AmjPAjkdrauZk9vnVggZdvQZzdVMzsnNFkAi3xcmCNUo"
+    }
+}
