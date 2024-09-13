@@ -1,6 +1,6 @@
 const webpack = require("webpack");
 module.exports = function override(config) {
-  const fallback = config.resolve.fallback || {"zlib": false};
+  const fallback = config.resolve.fallback || { "zlib": false, "vm": false };
   Object.assign(fallback, {
     crypto: require.resolve("crypto-browserify"),
     stream: require.resolve("stream-browserify"),
