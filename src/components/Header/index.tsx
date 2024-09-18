@@ -64,14 +64,12 @@ export default function Header({
     return (
         <header className="header">
             <div className="header-main">
-                <p className="text-primary font-semibold text-3xl">
-                 {" "}
-                </p>
+                <p className="text-primary font-semibold text-3xl"> </p>
 
                 {renderMobileMenuButton()}
 
                 <div className="hidden sm:flex space-x-4">
-                    <span className="text-secondary flex items-center">
+                    {/* <span className="text-secondary flex items-center">
                         <p
                             className={`text-lg mx-2 ${
                                 solanaNetwork === "mainnet-beta" &&
@@ -98,7 +96,29 @@ export default function Header({
                         >
                             Devnet
                         </p>
-                    </span>
+                    </span> */}
+                    <div className="flex gap-4 items-center">
+                        <a
+                            className="bg-linkedin bg-cover w-6 h-6"
+                            href="https://linkedin.com/company/chances-coin"
+                            target="_blank"
+                        ></a>
+                        <a
+                            className="bg-twitter bg-cover w-6 h-6"
+                            href="https://x.com/ChancesCoin"
+                            target="_blank"
+                        ></a>
+                        <a
+                            className="bg-instagram bg-cover w-6 h-6"
+                            href="https://Instagram.com/ChancesCoin"
+                            target="_blank"
+                        ></a>
+                        <a
+                            className="bg-facebook bg-cover w-6 h-6"
+                            href="https://facebook.com/ChancesCoin"
+                            target="_blank"
+                        ></a>
+                    </div>
                     <span className="text-secondary flex items-center">
                         {renderWalletButton()}
                     </span>
