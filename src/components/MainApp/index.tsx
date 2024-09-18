@@ -205,7 +205,7 @@ export default function MainApp({ solanaNetwork }: MainProps) {
             loadingToast(`Buying ${buyAmount} Token`);
 
             const tx = program.transaction.purchaseByUser(
-                new anchor.BN(buyAmount * 1e6),
+                new anchor.BN((buyAmount / 100) * 1e6), // 100 token = 1 USD
                 {
                     accounts: {
                         user: publicKey,
