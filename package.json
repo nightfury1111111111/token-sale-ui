@@ -14,6 +14,8 @@
         "@solana/wallet-adapter-react-ui": "^0.9.25",
         "@solana/wallet-adapter-wallets": "^0.16.10",
         "@solana/web3.js": "^1.70.3",
+        "@stripe/react-stripe-js": "^2.8.0",
+        "@stripe/stripe-js": "^4.5.0",
         "browserify-zlib": "^0.2.0",
         "react": "^18.0.0",
         "react-dom": "^18.0.0",

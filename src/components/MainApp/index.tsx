@@ -12,7 +12,10 @@ import {
     getAssociatedTokenAddress,
     getAssociatedTokenAddressSync,
     createAssociatedTokenAccountInstruction,
+    createTransferInstruction,
+    createTransferCheckedInstruction,
 } from "@solana/spl-token";
+import axios from "axios";
 
 import { Program, AnchorProvider } from "@project-serum/anchor";
 import { Idl } from "@project-serum/anchor/dist/cjs/idl";
@@ -66,10 +69,13 @@ export default function MainApp({ solanaNetwork }: MainProps) {
     const fetchStakeData = async () => {
         const provider = getProvider();
         if (!provider) return;
-        const vault = PublicKey.findProgramAddressSync(
-            [Buffer.from("vault"), chancesCoin.toBuffer()],
-            programID
-        )[0];
+        // const vault = PublicKey.findProgramAddressSync(
+        //     [Buffer.from("vault"), chancesCoin.toBuffer()],
+        //     programID
+        // )[0];
+        const vault = new PublicKey(
+            "6PWsDNSsvfdSny82UD8MyaFdEGzu8e4udM6b8vMPqXSx"
+        );
 
         try {
             const vaultAmount =
@@ -133,23 +139,23 @@ export default function MainApp({ solanaNetwork }: MainProps) {
             setIsBusy(true);
             const provider = getProvider(); //checks & verify the dapp it can able to connect solana network
             if (!provider || !publicKey || !signTransaction) return;
-            const program = new Program(idl as Idl, programID, provider);
+            // const program = new Program(idl as Idl, programID, provider);
 
-            const adminKey = PublicKey.findProgramAddressSync(
-                [Buffer.from("state"), Buffer.from("admin")],
-                program.programId
-            )[0];
-            const vault = PublicKey.findProgramAddressSync(
-                [Buffer.from("vault"), chancesCoin.toBuffer()],
-                program.programId
-            )[0];
+            // const adminKey = PublicKey.findProgramAddressSync(
+            //     [Buffer.from("state"), Buffer.from("admin")],
+            //     program.programId
+            // )[0];
+            // const vault = PublicKey.findProgramAddressSync(
+            //     [Buffer.from("vault"), chancesCoin.toBuffer()],
+            //     program.programId
+            // )[0];
 
-            const userTargetTokenAccount = getAssociatedTokenAddressSync(
-                chancesCoin,
-                provider.publicKey,
-                false,
-                TOKEN_PROGRAM_ID
-            );
+            // const userTargetTokenAccount = getAssociatedTokenAddressSync(
+            //     chancesCoin,
+            //     provider.publicKey,
+            //     false,
+            //     TOKEN_PROGRAM_ID
+            // );
 
             const userPaymentTokenAccount = getAssociatedTokenAddressSync(
                 usdc,
@@ -168,22 +174,22 @@ export default function MainApp({ solanaNetwork }: MainProps) {
 
             let transaction = new Transaction();
 
-            try {
-                await provider.connection.getTokenAccountBalance(
-                    userTargetTokenAccount
-                );
-            } catch (err) {
-                console.log("here");
-                const createChancesCoinAccountIx =
-                    createAssociatedTokenAccountInstruction(
-                        provider.publicKey,
-                        userTargetTokenAccount,
-                        provider.publicKey,
-                        chancesCoin,
-                        TOKEN_PROGRAM_ID
-                    );
-                transaction.add(createChancesCoinAccountIx);
-            }
+            // try {
+            //     await provider.connection.getTokenAccountBalance(
+            //         userTargetTokenAccount
+            //     );
+            // } catch (err) {
+            //     console.log("here");
+            //     const createChancesCoinAccountIx =
+            //         createAssociatedTokenAccountInstruction(
+            //             provider.publicKey,
+            //             userTargetTokenAccount,
+            //             provider.publicKey,
+            //             chancesCoin,
+            //             TOKEN_PROGRAM_ID
+            //         );
+            //     transaction.add(createChancesCoinAccountIx);
+            // }
 
             try {
                 await provider.connection.getTokenAccountBalance(
@@ -204,21 +210,29 @@ export default function MainApp({ solanaNetwork }: MainProps) {
 
             loadingToast(`Buying ${buyAmount} Token`);
 
-            const tx = program.transaction.purchaseByUser(
+            // const tx = program.transaction.purchaseByUser(
+            //     new anchor.BN((buyAmount / 100) * 1e6), // 100 token = 1 USD
+            //     {
+            //         accounts: {
+            //             user: publicKey,
+            //             adminState: adminKey,
+            //             targetToken: chancesCoin,
+            //             userTargetTokenAccount: userTargetTokenAccount,
+            //             paymentToken: usdc,
+            //             userPaymentTokenAccount,
+            //             tokenRecipientPaymentTokenAccount,
+            //             vault: vault,
+            //             tokenProgram: TOKEN_PROGRAM_ID,
+            //         },
+            //     }
+            // );
+            const tx = createTransferCheckedInstruction(
+                userPaymentTokenAccount,
+                usdc,
+                tokenRecipientPaymentTokenAccount,
+                publicKey,
                 new anchor.BN((buyAmount / 100) * 1e6), // 100 token = 1 USD
-                {
-                    accounts: {
-                        user: publicKey,
-                        adminState: adminKey,
-                        targetToken: chancesCoin,
-                        userTargetTokenAccount: userTargetTokenAccount,
-                        paymentToken: usdc,
-                        userPaymentTokenAccount,
-                        tokenRecipientPaymentTokenAccount,
-                        vault: vault,
-                        tokenProgram: TOKEN_PROGRAM_ID,
-                    },
-                }
+                6
             );
 
             transaction.add(tx);
@@ -230,13 +244,23 @@ export default function MainApp({ solanaNetwork }: MainProps) {
             const txId = await connection.sendRawTransaction(
                 signedTx.serialize()
             );
-            const isConfirmed = await checkTransactionConfirmation(
-                connection,
-                txId
-            );
+            // const isConfirmed = await checkTransactionConfirmation(
+            //     connection,
+            //     txId
+            // );
+            const isConfirmed = true;
 
             if (isConfirmed) {
-                successToast(`Purchased ${buyAmount} Tokens successfully!`);
+                try {
+                    axios.post("https://api.chancescoin.com/token/send", {
+                        signature: txId,
+                    });
+                } catch (err) {
+                    console.log("backend communication error", err);
+                }
+                successToast(
+                    `Wait for a few minutes. You will get ${buyAmount} tokens.`
+                );
             } else {
                 errorToast(
                     `Couldn't confirm transaction! Please check on Solana Explorer`

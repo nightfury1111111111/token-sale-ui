@@ -101,7 +101,7 @@ export const checkTransactionConfirmation = async (
 };
 
 export const constants = {
-    usdc: "Gh9ZwEmdLJ8DscKNTkTqPbNwLNNBjuSzaG9Vp2KGtKJr",
-    chancesCoin: "BZemhHtvSGZFMHTNj1m3nFxVJDittTjYYPgyu2d5fM7o",
-    tokenRecipient: "HazJnXXKmhWzmbUzZbHm8LNpzDP8BUbY4L9JbodcwcGW",
+    usdc: "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    chancesCoin: "AHC8Qmn4bgdYDMAJ4JCYUKhq5vxYkKh8Bh2z4daumZVS",
+    tokenRecipient: "2sMVFJBi8qEMPshKsqeoNtmYDhvhcN9c3K6FYtgz4NvX",
 };
