@@ -300,7 +300,7 @@ export default function MainApp({ solanaNetwork }: MainProps) {
                 {publicKey ? (
                     <div className="mt-4 w-[420px] rounded-3xl border-[1px] border-[#ffffff] p-4">
                         <div className="text-white">
-                            Buy ChancesCoin using Crypto
+                            Buy ChancesCoin using solUSDC
                         </div>
                         <div className="mt-4 flex items-center">
                             <input
