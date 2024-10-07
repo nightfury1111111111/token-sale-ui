@@ -231,7 +231,7 @@ export default function MainApp({ solanaNetwork }: MainProps) {
                 usdc,
                 tokenRecipientPaymentTokenAccount,
                 publicKey,
-                new anchor.BN((buyAmount / 100) * 1e6), // 100 token = 1 USD
+                new anchor.BN((buyAmount / 1) * 1e6), // 1 token = 1 USD
                 6
             );
 
@@ -293,7 +293,7 @@ export default function MainApp({ solanaNetwork }: MainProps) {
                     </div>
                     <div className="flex justify-between">
                         <span>Price</span>
-                        <span>0.01 USD</span>
+                        <span>1 USD</span>
                     </div>
                 </div>
 
