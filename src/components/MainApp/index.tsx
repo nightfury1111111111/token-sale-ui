@@ -60,7 +60,7 @@ export default function MainApp({ solanaNetwork }: MainProps) {
             lineItems: [
                 {
                     price: "price_1QGMeCDt9bTick7QDoRAmU9X",
-                    quantity: 100,
+                    quantity: 1,
                 },
             ],
             mode: "payment",
