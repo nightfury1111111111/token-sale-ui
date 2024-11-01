@@ -16,6 +16,8 @@ import {
     createTransferCheckedInstruction,
 } from "@solana/spl-token";
 import axios from "axios";
+import getStripe from "../../utils/getStripe";
+import { loadStripe } from "@stripe/stripe-js";
 
 import { Program, AnchorProvider } from "@project-serum/anchor";
 import { Idl } from "@project-serum/anchor/dist/cjs/idl";
@@ -48,6 +50,27 @@ export default function MainApp({ solanaNetwork }: MainProps) {
     const [currentUSDCTokenAmount, setCurrentUSDCTokenAmount] = useState(0);
 
     const [refreshCount, setRefreshCount] = useState<number>(0);
+
+    async function handleCheckout() {
+        const stripe = await loadStripe(
+            "pk_live_51Q8m5jDt9bTick7QcGscxY7OAYb1aXK8i6BExhG3dwtScTRItTFaq2JAqy3zdPbIgxbI5LHFKcS3QrjLBAIGkym400OEUkUbMA"
+        );
+        if (!stripe) return;
+        const { error } = await stripe.redirectToCheckout({
+            lineItems: [
+                {
+                    price: "price_1QGMeCDt9bTick7QDoRAmU9X",
+                    quantity: 100,
+                },
+            ],
+            mode: "payment",
+            successUrl: `https://chancescoin.com`,
+            cancelUrl: `https://chancescoin.com`,
+            // customerEmail: "dragondev93@gmail.com",
+            clientReferenceId: "5aDNJ9HFm87rJ9y9dn8pYX2EG1nYgRZATbo94mq3k5yR",
+        });
+        console.warn(error.message);
+    }
 
     const getProvider = () => {
         if (!wallet || !publicKey || !signTransaction || !signAllTransactions) {
@@ -286,6 +309,9 @@ export default function MainApp({ solanaNetwork }: MainProps) {
                 <h1 className="heading-1 my-4 sm:px-4 text-4xl">
                     Welcome to ChancesCoin
                 </h1>
+                <button onClick={handleCheckout} className="text-white">
+                    Checkout
+                </button>
                 <div className="w-[420px] p-4 rounded-3xl border-[1px] border-[#ffffff] text-white">
                     <div className="flex justify-between">
                         <span>Remaining Amount</span>
