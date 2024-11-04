@@ -86,8 +86,7 @@ export default function MainApp({ solanaNetwork }: MainProps) {
                 successUrl: `https://chancescoin.com`,
                 cancelUrl: `https://chancescoin.com`,
                 // customerEmail: "dragondev93@gmail.com",
-                clientReferenceId:
-                    "5aDNJ9HFm87rJ9y9dn8pYX2EG1nYgRZATbo94mq3k5yR",
+                clientReferenceId: recipientWallet,
             });
             console.warn(error.message);
             setIsBusy(false);
