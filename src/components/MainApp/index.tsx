@@ -45,6 +45,8 @@ export default function MainApp({ solanaNetwork }: MainProps) {
 
     const [buyAmount, setBuyAmount] = useState(0);
     const [remainingAmount, setRemainingAmount] = useState(0);
+    const [recipientWallet, setRecipientWallet] = useState("");
+    const [paymentMethod, setPaymentMethod] = useState("crypto");
 
     const [isBusy, setIsBusy] = useState(false);
     const [currentUSDCTokenAmount, setCurrentUSDCTokenAmount] = useState(0);
@@ -52,24 +54,49 @@ export default function MainApp({ solanaNetwork }: MainProps) {
     const [refreshCount, setRefreshCount] = useState<number>(0);
 
     async function handleCheckout() {
-        const stripe = await loadStripe(
-            "pk_live_51Q8m5jDt9bTick7QcGscxY7OAYb1aXK8i6BExhG3dwtScTRItTFaq2JAqy3zdPbIgxbI5LHFKcS3QrjLBAIGkym400OEUkUbMA"
-        );
-        if (!stripe) return;
-        const { error } = await stripe.redirectToCheckout({
-            lineItems: [
-                {
-                    price: "price_1QGMeCDt9bTick7QDoRAmU9X",
-                    quantity: 1,
-                },
-            ],
-            mode: "payment",
-            successUrl: `https://chancescoin.com`,
-            cancelUrl: `https://chancescoin.com`,
-            // customerEmail: "dragondev93@gmail.com",
-            clientReferenceId: "5aDNJ9HFm87rJ9y9dn8pYX2EG1nYgRZATbo94mq3k5yR",
-        });
-        console.warn(error.message);
+        try {
+            if (!buyAmount) {
+                errorToast("No amount entered!");
+                return;
+            }
+            recipientWallet;
+
+            if (!recipientWallet) {
+                errorToast("No recipientWallet entered!");
+                return;
+            }
+
+            if (Number(buyAmount) <= 0) {
+                errorToast("Invalid amount! Should be greater than 0");
+                return;
+            }
+            setIsBusy(true);
+            const stripe = await loadStripe(
+                "pk_live_51Q8m5jDt9bTick7QcGscxY7OAYb1aXK8i6BExhG3dwtScTRItTFaq2JAqy3zdPbIgxbI5LHFKcS3QrjLBAIGkym400OEUkUbMA"
+            );
+            if (!stripe) return;
+            const { error } = await stripe.redirectToCheckout({
+                lineItems: [
+                    {
+                        price: "price_1QGMeCDt9bTick7QDoRAmU9X",
+                        quantity: buyAmount,
+                    },
+                ],
+                mode: "payment",
+                successUrl: `https://chancescoin.com`,
+                cancelUrl: `https://chancescoin.com`,
+                // customerEmail: "dragondev93@gmail.com",
+                clientReferenceId:
+                    "5aDNJ9HFm87rJ9y9dn8pYX2EG1nYgRZATbo94mq3k5yR",
+            });
+            console.warn(error.message);
+            setIsBusy(false);
+        } catch (err) {
+            setIsBusy(false);
+            handleRefresh();
+            errorToast("Something went wrong while sending money!");
+            console.error("solSendHandler => ", err);
+        }
     }
 
     const getProvider = () => {
@@ -90,8 +117,8 @@ export default function MainApp({ solanaNetwork }: MainProps) {
     };
 
     const fetchStakeData = async () => {
-        const provider = getProvider();
-        if (!provider) return;
+        // const provider = getProvider();
+        // if (!provider) return;
         // const vault = PublicKey.findProgramAddressSync(
         //     [Buffer.from("vault"), chancesCoin.toBuffer()],
         //     programID
@@ -101,8 +128,8 @@ export default function MainApp({ solanaNetwork }: MainProps) {
         );
 
         try {
-            const vaultAmount =
-                await provider.connection.getTokenAccountBalance(vault);
+            const vaultAmount = await connection.getTokenAccountBalance(vault);
+            console.log(vaultAmount);
 
             setRemainingAmount(vaultAmount.value.uiAmount || 0);
         } catch (err) {
@@ -309,9 +336,6 @@ export default function MainApp({ solanaNetwork }: MainProps) {
                 <h1 className="heading-1 my-4 sm:px-4 text-4xl">
                     Welcome to ChancesCoin
                 </h1>
-                <button onClick={handleCheckout} className="text-white">
-                    Checkout
-                </button>
                 <div className="w-[420px] p-4 rounded-3xl border-[1px] border-[#ffffff] text-white">
                     <div className="flex justify-between">
                         <span>Remaining Amount</span>
@@ -323,36 +347,123 @@ export default function MainApp({ solanaNetwork }: MainProps) {
                     </div>
                 </div>
 
-                {publicKey ? (
-                    <div className="mt-4 w-[420px] rounded-3xl border-[1px] border-[#ffffff] p-4">
-                        <div className="text-white">
-                            Buy ChancesCoin using solUSDC
+                <div className="text-white py-4">
+                    Purchase Chancescoin using cryptocurrency(solUSDC) or
+                    fiatcurrency
+                </div>
+                <div className="flex">
+                    <div className="flex text-white font-semibold text-[16px]">
+                        <div
+                            className="w-[100px] h-[60px] flex justify-center items-center cursor-pointer bg-gray-600"
+                            style={{
+                                opacity:
+                                    paymentMethod == "crypto" ? "1" : "0.7",
+                            }}
+                            onClick={() => setPaymentMethod("crypto")}
+                        >
+                            Crypto
                         </div>
-                        <div className="mt-4 flex items-center">
-                            <input
-                                className="w-[100px] h-10 px-4 rounded-md"
-                                type="number"
-                                placeholder="Enter amount"
-                                value={Number(buyAmount)}
-                                onChange={(event) => {
-                                    setBuyAmount(Number(event.target.value));
-                                }}
-                                min={0}
-                            />
-                            <button
-                                type="button"
-                                className="button ml-4 w-40 bg-gradient-to-r from-[#1ddaff] to-[#ea1af7] rounded-md text-lg px-4 py-2"
-                                onClick={buyTokenHandler}
-                                disabled={isBusy}
-                            >
-                                Buy token
-                            </button>
+                        <div
+                            className="w-[100px] h-[60px] flex justify-center items-center cursor-pointer bg-gray-600"
+                            style={{
+                                opacity: paymentMethod == "fiat" ? "1" : "0.7",
+                            }}
+                            onClick={() => setPaymentMethod("fiat")}
+                        >
+                            Fiat
                         </div>
                     </div>
-                ) : (
-                    <p className="text-secondary text-xl text-center mt-20">
-                        Please connect wallet to use the app.
-                    </p>
+                </div>
+
+                {paymentMethod == "crypto" && (
+                    <div>
+                        {publicKey ? (
+                            <div className="mt-4 w-[420px] rounded-3xl border-[1px] border-[#ffffff] p-4">
+                                <div className="text-white">
+                                    Buy ChancesCoin using solUSDC
+                                </div>
+                                <div className="mt-4 flex items-center">
+                                    <input
+                                        className="w-[100px] h-10 px-4 rounded-md"
+                                        type="number"
+                                        placeholder="Enter amount"
+                                        value={Number(buyAmount)}
+                                        onChange={(event) => {
+                                            setBuyAmount(
+                                                Number(event.target.value)
+                                            );
+                                        }}
+                                        min={0}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="button ml-4 w-40 bg-gradient-to-r from-[#1ddaff] to-[#ea1af7] rounded-md text-lg px-4 py-2"
+                                        onClick={buyTokenHandler}
+                                        disabled={isBusy}
+                                    >
+                                        Buy token
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <p className="text-secondary text-xl text-center mt-20">
+                                Please connect wallet to buy "Chances Coin"
+                                using cryptocurrency.
+                            </p>
+                        )}
+                    </div>
+                )}
+                {paymentMethod == "fiat" && (
+                    <div>
+                        <div className="mt-4 w-[420px] rounded-3xl border-[1px] border-[#ffffff] p-4">
+                            <div className="text-white">
+                                Buy our "Chances Coin" with fiat money using
+                                your Visa/Mastercards online
+                            </div>
+                            <div className="mt-4 flex items-center">
+                                <div className="flex flex-col">
+                                    <div className="text-white text-sm">
+                                        Enter amount
+                                    </div>
+                                    <input
+                                        className="w-[100px] h-10 px-4 rounded-md"
+                                        type="number"
+                                        placeholder="Enter amount"
+                                        value={Number(buyAmount)}
+                                        onChange={(event) => {
+                                            setBuyAmount(
+                                                Number(event.target.value)
+                                            );
+                                        }}
+                                        min={0}
+                                    />
+                                    <div className="text-white text-sm mt-4">
+                                        Enter wallet address you want to receive
+                                        ChancesCoin
+                                    </div>
+                                    <input
+                                        className="w-[360px] h-10 px-4 rounded-md"
+                                        type="text"
+                                        placeholder="Enter wallet address"
+                                        value={recipientWallet}
+                                        onChange={(event) => {
+                                            setRecipientWallet(
+                                                event.target.value
+                                            );
+                                        }}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="button mt-4 w-40 bg-gradient-to-r from-[#1ddaff] to-[#ea1af7] rounded-md text-lg px-4 py-2"
+                                        onClick={handleCheckout}
+                                        disabled={isBusy}
+                                    >
+                                        Buy token
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 )}
             </div>
         </main>
